@@ -1,0 +1,151 @@
+#summary {
+    display: block;
+    padding: 0 2em;
+
+}
+.summary-row {
+    display: grid;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 5px;
+    padding: 5px;
+
+    border-radius: 0.5rem;
+    grid-template-columns:
+        repeat(6, minmax(30px, 80px));
+    justify-content: space-between;
+    grid-row-gap: 10px;
+}
+
+.col-1 {
+    grid-column: 1;
+}
+
+.col-2 {
+    grid-column: 2;
+}
+
+.col-3 {
+    grid-column: 3;
+    text-align: end;
+}
+
+.col-4 {
+    grid-column: 4;
+    text-align: end;
+}
+
+.col-5 {
+    grid-column: 5;
+    text-align: end;
+}
+
+.col-6 {
+    grid-column: 6;
+    text-align: end;
+}
+
+.summary-cell {
+    display: block;
+}
+
+.bg-gold {
+    background-color: gold;
+}
+
+.bg-greenyellow {
+    background-color: greenyellow;
+}
+
+.bg-red {
+    background-color: red;
+}
+
+/* search input */
+.search {
+    display: flex;
+    padding: 1rem 2rem;
+    justify-content: space-between;
+    margin: 0.5px;
+}
+.search-input {
+    --tw-border-opacity: 1;
+    border-color: rgb(209 213 219 / var(--tw-border-opacity));
+    border-radius: 0.375rem;
+    border-width: 1px;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+}
+
+.button-new {
+    border-radius: 0.375rem;
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+    cursor: pointer;
+    letter-spacing: .1em;
+    font-weight: 600;
+    margin-left: 0.75rem;
+    padding: 0.5rem 1rem;
+    --tw-bg-opacity: 1;
+    background-color: rgb(31 41 55 / var(--tw-bg-opacity));
+}
+.button-new:hover {
+    background-color: rgb(55 65 81);
+
+}
+
+#list_payments {
+    display: block;
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: #e5e7eb;
+}
+
+.payment {
+    background-color: #f5f5fa;
+    color: #333;
+    border-radius: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(30px, 140px) repeat(3, minmax(30px, 80px)) minmax(30px, 120px) minmax(30px, 80px);
+    grid-row-gap: 10px;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 5px;
+    padding: 5px;
+}
+
+@media (min-width: 800px) {
+    #list_payments {
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+}
+
+/* Pagination */
+
+.pagination {
+    margin: 0 auto;
+    text-align: center;
+}
+
+.pagination li {
+    display: inline;
+    list-style: none;
+}
+
+.pagination a {
+    color: #0480ba;
+    text-decoration: none;
+}
+
+.pagination a:hover {
+    text-decoration: underline;
+}
+
+.pagination .current {
+    color: #d51616;
+}

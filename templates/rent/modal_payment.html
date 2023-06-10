@@ -1,0 +1,87 @@
+<!-- Затемнение всей страницы при открытии окна -->
+<div id="myModal" class="modal">
+    <!-- Содержимое модального окна -->
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <form method="POST"
+              action=" http://sbitza.com/payments">
+            <input type="hidden" name="_token" value="99c0b5JgXifJzFI5uSNLv0M5PjTbGVyeR8F5U1t0"> <label
+                for="date">date</label>
+            <input name="date" id="date" type="date" class="border-gray-300 rounded-md w-full"
+                   value="2023-06-10"/>
+            <label for="room1">Комната</label>
+            <select name="room1" id="room1" class="border-gray-300 rounded-md " onchange="fillr2()">
+                <option>Select</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>Д</option>
+            </select>
+            <select name="room2" id="room2" class="border-gray-300 rounded-md "></select><br>
+            <label for="amount">amount</label>
+            <input name="amount" id="amount" type="number" class="border-gray-300 rounded-md w-full"
+                   value="0"
+                   onimput="javascript:countTotal()"/>
+            <label for="discount">discount</label>
+            <input name="discount" id="discount" type="number" class="border-gray-300 rounded-md w-full"
+                   value="0"/>
+            <label for="total">total</label>
+            <input name="total" id="total" type="number" class="border-gray-300 rounded-md w-full"
+                   value="0"/>
+            <label for="bank_account">account</label>
+            <input name="bank_account" id="bank_account" type="text" class="border-gray-300 rounded-md w-full"
+                   value="Нал"/>
+            <input type="submit"
+                   class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
+                   value="create"/>
+
+        </form>
+        <script>
+function removeOptions(selectElement) {
+   const length = selectElement.options.length - 1;
+   for(let i = length; i >= 0; i--) {
+      selectElement.remove(i);
+   }
+}
+
+const fillr2 = () => {
+    room1 = document.getElementById('room1');
+    r1 = room1.value;
+    room2 = document.getElementById('room2');
+    removeOptions(room2);
+
+    const url = `/payments/r2`;
+    ajax({
+        url: url,
+        method: "POST",
+        responseType: "json",
+        data: {r1: r1},
+        success: (r2) => {
+            console.log(r2);
+            console.log(typeof r2);
+            Object.values(r2).forEach ( val => {
+                console.log (val);
+                const opt = document.createElement('option');
+                opt.text = val;
+                room2.appendChild(opt)
+            });
+        }
+    });
+};
+
+const countTotal = () => {
+    amount = document.getElementById('amount');
+    dicsount = document.getElementById('dicsount');
+    total = amount.value - discount.value;
+    document.getElementById('total').value = total;
+    amount.value = Number(amount.value);
+};
+document.getElementById('amount').addEventListener('input', () => {
+    countTotal();
+});
+document.getElementById('discount').addEventListener('input', () => {
+    countTotal();
+});
+        </script>
+    </div>
+</div>
