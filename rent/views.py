@@ -5,7 +5,7 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from bitza.common_functions import is_in_group, GROUPS, get_menu_items
-from rent.forms import PaymentModelForm
+from rent.forms import PaymentModelForm, ContractModelForm
 from rent.models import ExpectedPayments, Payment, Room, Contract
 
 
@@ -13,9 +13,9 @@ def summary(request):
     user = request.user
     if not is_in_group(user, group=GROUPS['owners']):
         raise Http404()
-    summary = ExpectedPayments.objects.all()
+    summary_lst = ExpectedPayments.objects.all()
     menu = get_menu_items('owners')
-    context = {'summary': summary, 'menu': menu}
+    context = {'summary': summary_lst, 'menu': menu}
     print(f'menu: {menu}')
     return render(
         request,
@@ -44,7 +44,7 @@ def payments(request):
             payment_obj.type = 'Alq'
             payment_obj.book_account = 'Приход'
             payment_obj.contract = Contract.get_active_contract_by_room(form.cleaned_data['room'])
-            payment_obj.user = request.user
+            payment_obj.user = user
             payment_obj.save()
             print('saved')
         else:
@@ -80,16 +80,53 @@ def payments(request):
     )
 
 
-def room2(request):
-    for param in request.POST:
-        print(f"{param} = {request.POST.get(param)}")
-    r1 = request.POST.get('r1')
-    result = Room.r2(r1=r1)
-    return JsonResponse(result)
-
-
 def contracts(request):
-    pass
+    user = request.user
+    if not is_in_group(user, group=GROUPS['owners']):
+        raise Http404()
+    if request.POST:
+        form = ContractModelForm(request.POST)
+        if form.is_valid():
+            contract_obj = Contract()
+            print(f'cleaned data: {form.cleaned_data}')
+            contract_obj.date_begin = form.cleaned_data['date_begin']
+            contract_obj.date_end = form.cleaned_data['date_end']
+            contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['room'])
+            contract_obj.price = form.cleaned_data['price']
+            contract_obj.discount = form.cleaned_data['discount']
+            contract_obj.contact = form.cleaned_data['contact']
+            contract_obj.contract = Contract.get_active_contract_by_room(form.cleaned_data['room'])
+            contract_obj.user = user
+            contract_obj.save()
+            print('saved')
+        else:
+            print(f'form not valid {form.errors}')
+    else:
+        form = ContractModelForm()
+        print(f'form: {form}')
+    result = Contract.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(result, 30)
+    try:
+        list_payments = paginator.page(page)
+    except PageNotAnInteger:
+        list_payments = paginator.page(1)
+    except EmptyPage:
+        list_payments = paginator.page(paginator.num_pages)
+    menu = get_menu_items('owners')
+    labels = ['Комната', 'Клиент', 'Дата', 'Сумма', 'Оплата', 'Статус', '']
+    context = {
+        'contracts': list_payments,
+        'menu': menu,
+        'labels': labels,
+        'form': form,
+    }
+
+    return render(
+        request,
+        'rent/contracts.html',
+        context=context,
+    )
 
 
 def clients(request):

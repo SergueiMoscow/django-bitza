@@ -3,32 +3,11 @@ from datetime import date
 from django import forms
 from django.forms import SelectDateWidget
 
-from rent.models import Payment, Room
+from rent.models import Payment, Room, Contract
+from dateutil.relativedelta import relativedelta
 
 
 class PaymentModelForm(forms.ModelForm):
-
-    # r1_list = Room.r1()
-    # room1 = forms.TypedChoiceField(
-    #     label='Комната',
-    #     choices=r1_list,
-    #     coerce=int,
-    #     widget=forms.Select(
-    #         attrs={
-    #             'id': 'room1',
-    #             'onchange': "fillr2();"
-    #         }
-    #     )
-    # )
-    # room2 = forms.TypedChoiceField(
-    #     label='',
-    #     choices=tuple(),
-    #     coerce=int,
-    #     widget=forms.Select(
-    #         attrs={'id': 'room2'}
-    #     ),
-    #     validators=[]
-    # )
 
     class Meta:
         model = Payment
@@ -42,6 +21,39 @@ class PaymentModelForm(forms.ModelForm):
             'bank_account': forms.Select()
         }
 
-    # def clean_room2(self):
-    #     print(f"Cleaned room2 {self.cleaned_data('room2')}")
-    #     return self.cleaned_data('room2')
+
+class ContractModelForm(forms.ModelForm):
+
+    vacant_rooms = Room.get_vacant_rooms()
+    select_contact = forms.CharField(
+        label='Клиент'
+    )
+    vacant_room = forms.ChoiceField(
+        label='Комната',
+        choices=vacant_rooms,
+    )
+
+    class Meta:
+        model = Contract
+        fields = [
+            'date_begin',
+            'date_end',
+            'number',
+            'pay_day',
+            'price',
+            'deposit',
+            'discount',
+            'form',
+        ]
+        widgets = {
+            'date_begin': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'value': date.today()}),
+            'date_end': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={'type': 'date', 'value': date.today() + relativedelta(months=+6)}
+            ),
+            'price': forms.TextInput(attrs={'id': 'price'}),
+            'discount': forms.TextInput(attrs={'id': 'discount'}),
+            'deposit': forms.TextInput(attrs={'id': 'deposit', 'value': '0'}),
+            'contact': forms.TextInput(attrs={'id': 'contact'}),
+            'form': forms.Select(),
+        }

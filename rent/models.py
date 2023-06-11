@@ -177,14 +177,24 @@ class Room(models.Model):
             FROM rent_room
             WHERE status = 'A' AND SUBSTRING(shortname, 1, 1) = '{r1}'
             ORDER BY r2;"""
-        cursor = connection.cursor()
-        cursor.execute(query)
-        counter = 1
-        for row in cursor:
-            print(f'r2:{row}')
-            r2[counter] = row[0]
-            counter += 1
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            counter = 1
+            for row in cursor:
+                print(f'r2:{row}')
+                r2[counter] = row[0]
+                counter += 1
         return r2
+
+    @staticmethod
+    def get_vacant_rooms() -> tuple:
+        query = 'SELECT * FROM vacant_rooms;'
+        result = []
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            for row in cursor:
+                result.append((row[0], row[0]))
+        return tuple(result)
 
 
 class Contact(models.Model):
@@ -456,11 +466,11 @@ class Contract(models.Model):
         ORDER BY room_id
         LIMIT 0, {number}; 
         """
-        cursor = connection.cursor()
-        cursor.execute(query)
-        result = '';
-        for row in cursor:
-            result += f'"{row[0]}",'
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            result = '';
+            for row in cursor:
+                result += f'"{row[0]}",'
         return result[:-1]
 
     @staticmethod
@@ -656,3 +666,11 @@ class ExpectedPayments(models.Model):
     class Meta:
         managed = False
         db_table = "expected_payments"
+
+
+class VacantRooms(models.Model):
+    shortname = models.CharField(max_length=10)
+
+    class Meta:
+        managed = False
+        db_table = 'vacant_rooms'
