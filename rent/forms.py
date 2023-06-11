@@ -3,7 +3,7 @@ from datetime import date
 from django import forms
 from django.forms import SelectDateWidget
 
-from rent.models import Payment, Room, Contract
+from rent.models import Payment, Room, Contract, VacantRooms
 from dateutil.relativedelta import relativedelta
 
 
@@ -25,12 +25,17 @@ class PaymentModelForm(forms.ModelForm):
 class ContractModelForm(forms.ModelForm):
 
     vacant_rooms = Room.get_vacant_rooms()
+    print(f'Vacant_rooms: {vacant_rooms}')
     select_contact = forms.CharField(
-        label='Клиент'
+        label='Клиент',
+        widget=forms.TextInput(attrs={'id': 'contact'})
     )
-    vacant_room = forms.ChoiceField(
-        label='Комната',
-        choices=vacant_rooms,
+    vacant_room = forms.CharField(
+        widget=forms.Select(
+            choices=vacant_rooms,
+            attrs={'value': vacant_rooms[0]}
+        ),
+        label='Свободные комнаты'
     )
 
     class Meta:

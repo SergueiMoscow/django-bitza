@@ -13,22 +13,18 @@
             {{ form.date_end.label }}
             {{ form.date_end }}
             {{ form.room.label }}
-            {# autocomplete block #}
-            <div class="autocomplete">
-            {{ form.room }}
+            {{ form.vacant_room.label }}
+            {{ form.vacant_room }}
 <!--                <div id="myInputautocomplete-list" class="autocomplete-items"></div>-->
-            </div>
-            {# { form.room1 } #}
-            {# { form.room2 } #}
             <br>
-            {{ form.amount.label }}
-            {{ form.amount }}
+            {{ form.price.label }}
+            {{ form.price }}
             {{ form.discount.label }}
             {{ form.discount }}
-            {{ form.total.label }}
-            {{ form.total }}
-            {{ form.bank_account.label }}
-            {{ form.bank_account }}
+            {{ form.pay_day.label }}
+            {{ form.pay_day }}
+            {{ form.select_contact.label }}
+            {{ form.select_contact }}
             <input type="submit"
                    class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
                    value="create"/>
