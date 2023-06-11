@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, connection
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
@@ -150,6 +150,41 @@ class Room(models.Model):
 
     def __str__(self):
         return self.shortname
+
+    @staticmethod
+    def r1() -> list:
+        """Возвращает уникальные первые символы названия комнат из открытых договоров (для html select)"""
+        query = 'SELECT DISTINCT SUBSTRING(room_id, 1, 1) AS r1 FROM rent_contract WHERE status = "A" order by r1'
+        result = [(0, 'Select')]
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            counter = 1
+            for row in cursor:
+                result.append((counter, row[0]))
+                counter += 1
+        return result
+
+    @staticmethod
+    def r2(r1: str) -> dict:
+        """Принимает 1й символ обозначения комнаты
+        Возвращает список конца строк.
+        Пример:есть комнаты A.01, A.02, A.03, при параметре r1='A'
+        ф-я вернёт 01, 02, 03 в виде словаря для combobox"""
+        r2 = {}
+        query = f"""
+            SELECT DISTINCT
+            SUBSTRING(shortname, 3) as r2
+            FROM rent_room
+            WHERE status = 'A' AND SUBSTRING(shortname, 1, 1) = '{r1}'
+            ORDER BY r2;"""
+        cursor = connection.cursor()
+        cursor.execute(query)
+        counter = 1
+        for row in cursor:
+            print(f'r2:{row}')
+            r2[counter] = row[0]
+            counter += 1
+        return r2
 
 
 class Contact(models.Model):
@@ -407,6 +442,39 @@ class Contract(models.Model):
     def __str__(self):
         return f'{self.room}, {self.date_begin}, {self.price}, {self.status}'
 
+    @staticmethod
+    def get_active_rooms_for_js(substring: str = '', number: int = 10) -> str:
+        """Returns string of rooms list from active contracts
+        for insert it as JavaScript array autocomplete
+        Receives:
+        substring for filter values (default '')
+        max number of elements (default 10)"""
+        query = f"""
+        SELECT DISTINCT room_id
+        FROM rent_contract
+        WHERE status = "A" AND room_id LIKE "%{substring}%"
+        ORDER BY room_id
+        LIMIT 0, {number}; 
+        """
+        cursor = connection.cursor()
+        cursor.execute(query)
+        result = '';
+        for row in cursor:
+            result += f'"{row[0]}",'
+        return result[:-1]
+
+    @staticmethod
+    def get_active_contract_by_room(room: str):
+        query = f"""
+        SELECT `number`  FROM rent_contract WHERE status = "A" AND room_id = "{room}";
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            print(f'cursor: {cursor}')
+            number = cursor.fetchone()[0]
+        print(f'models.get_active_contract_by_room: {room} = {number}')
+        return Contract.objects.get(number=number)
+
 
 class Document(models.Model):
     contact = models.ForeignKey(
@@ -553,10 +621,10 @@ class Payment(models.Model):
     def list_years(self):
         query = """
             SELECT 
-	            uuid() as id,
-	            year as years
+                uuid() as id,
+                year as years
             FROM 
-	            (SELECT DISTINCT YEAR(`date`) as year FROM rent_payment ORDER BY year DESC) as years;
+                (SELECT DISTINCT YEAR(`date`) as year FROM rent_payment ORDER BY year DESC) as years;
         """
         years = []
         for year in self.objects.raw(query):

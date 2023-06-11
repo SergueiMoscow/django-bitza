@@ -362,4 +362,10 @@ body.dark .search-string i{
     font-size: 1rem;
     line-height: 1.5rem;
     border-color: #e5e7eb;
+    border-radius: 0.375rem;
+    width: 100%;
+}
+
+.modal-content select {
+    width: 30%;
 }
