@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models, connection
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db.models import Q
 
 
 class Building(models.Model):
@@ -323,6 +324,20 @@ class Contact(models.Model):
         verbose_name = 'Клиент'
         verbose_name_plural = 'Клиенты'
 
+    @classmethod
+    def search_contacts(cls, q: str):
+        """Returns list of contacts which name or surname contains q (parameter)"""
+        search_string = q
+        remove_chars = ['"\':()_<>']
+        if not isinstance(search_string, str):
+            return None
+        for symbol in remove_chars:
+            search_string = search_string.replace(symbol, '')
+        contact_list = cls.objects.filter(
+            Q(name__icontains=search_string) | Q(surname__icontains=search_string)
+        )
+        return contact_list
+
 
 class ContractForm(models.Model):
     name = models.CharField(
@@ -449,8 +464,8 @@ class Contract(models.Model):
         verbose_name = 'Договор'
         verbose_name_plural = 'Договоры'
 
-    def __str__(self):
-        return f'{self.room}, {self.date_begin}, {self.price}, {self.status}'
+    # def __str__(self):
+    #     return f'{self.room}, {self.date_begin}, {self.price}, {self.status}'
 
     @staticmethod
     def get_active_rooms_for_js(substring: str = '', number: int = 10) -> str:
@@ -481,10 +496,16 @@ class Contract(models.Model):
         with connection.cursor() as cursor:
             cursor.execute(query)
             print(f'cursor: {cursor}')
-            number = cursor.fetchone()[0]
+            row = cursor.fetchone()
+            if row is None:
+                return None
+            number = row[0]
         print(f'models.get_active_contract_by_room: {room} = {number}')
         return Contract.objects.get(number=number)
 
+    @staticmethod
+    def new_contract_number(date: str, room: str):
+        return f'{date}-{room}'
 
 class Document(models.Model):
     contact = models.ForeignKey(

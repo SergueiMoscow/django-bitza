@@ -1,12 +1,13 @@
 from django import template
 from django.contrib.auth.models import User, Group
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, get_object_or_404
 
 from bitza.common_functions import is_in_group, GROUPS, get_menu_items
 from rent.forms import PaymentModelForm, ContractModelForm
-from rent.models import ExpectedPayments, Payment, Room, Contract
+from rent.models import ExpectedPayments, Payment, Room, Contract, Contact
 
 
 def summary(request):
@@ -16,7 +17,7 @@ def summary(request):
     summary_lst = ExpectedPayments.objects.all()
     menu = get_menu_items('owners')
     context = {'summary': summary_lst, 'menu': menu}
-    print(f'menu: {menu}')
+    # print(f'menu: {menu}')
     return render(
         request,
         'rent/summary.html',
@@ -91,19 +92,20 @@ def contracts(request):
             print(f'cleaned data: {form.cleaned_data}')
             contract_obj.date_begin = form.cleaned_data['date_begin']
             contract_obj.date_end = form.cleaned_data['date_end']
-            contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['room'])
+            contract_obj.room = get_object_or_404(Room, pk=form.cleaned_data['vacant_room'])
             contract_obj.price = form.cleaned_data['price']
             contract_obj.discount = form.cleaned_data['discount']
-            contract_obj.contact = form.cleaned_data['contact']
-            contract_obj.contract = Contract.get_active_contract_by_room(form.cleaned_data['room'])
+            contract_obj.pay_day = form.cleaned_data['pay_day']
+            contract_obj.number = Contract.new_contract_number(form.cleaned_data['date_begin'], form.cleaned_data['vacant_room'])
             contract_obj.user = user
+            selected_contact = int(request.POST.get('contact_id'))
+            contract_obj.contact = Contact.objects.get(pk=selected_contact)
+            contract_obj.status = 'A'
             contract_obj.save()
-            print('saved')
         else:
             print(f'form not valid {form.errors}')
     else:
         form = ContractModelForm()
-        print(f'form: {form}')
     result = Contract.objects.all()
     page = request.GET.get('page', 1)
     paginator = Paginator(result, 30)
@@ -131,6 +133,17 @@ def contracts(request):
 
 def clients(request):
     pass
+
+
+def query_contacts(request):
+    q = request.GET.get('q')
+    list_contacts = Contact.search_contacts(q)
+    result = {}
+    if list_contacts is None:
+        return JsonResponse(result)
+    for contact in list_contacts:
+        result[contact.id] = f'{contact.name} {contact.surname}'
+    return JsonResponse(result)
 
 
 # def check_and_create_clients_group(group_name='Клиенты'):

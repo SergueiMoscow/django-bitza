@@ -88,12 +88,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /*
      * Функция закрывает модальное окно при клике вне контента модального окна
+     */
     const handleOutside = (event) => {
-        const isClickInside = !!event.target.closest('.modal-content');
+        const isClickInside = !!event.target.closest('.modal-content') ||
+            event.target.parentElement.className == 'autocomplete-items';
         if (!isClickInside) {
             closeModal();
         }
     }
-     */
 
 })

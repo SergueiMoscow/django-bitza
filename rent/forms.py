@@ -25,7 +25,6 @@ class PaymentModelForm(forms.ModelForm):
 class ContractModelForm(forms.ModelForm):
 
     vacant_rooms = Room.get_vacant_rooms()
-    print(f'Vacant_rooms: {vacant_rooms}')
     select_contact = forms.CharField(
         label='Клиент',
         widget=forms.TextInput(attrs={'id': 'contact'})
@@ -43,10 +42,10 @@ class ContractModelForm(forms.ModelForm):
         fields = [
             'date_begin',
             'date_end',
-            'number',
+            # 'number',
             'pay_day',
             'price',
-            'deposit',
+            # 'deposit',
             'discount',
             'form',
         ]

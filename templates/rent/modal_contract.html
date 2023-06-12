@@ -24,7 +24,10 @@
             {{ form.pay_day.label }}
             {{ form.pay_day }}
             {{ form.select_contact.label }}
+            <div class="autocomplete">
             {{ form.select_contact }}
+            </div>
+            <input type="hidden" name="contact_id" id="contact_id">
             <input type="submit"
                    class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
                    value="create"/>
@@ -35,8 +38,14 @@
 <script src="{% static 'js/autocomplete.js' %}"></script>
 <script>
 // {# for autocomplete #}
-const rooms=[{{ rooms_list|safe }}]
-autocomplete(document.getElementById("room"), rooms);
+const url_contact_list='/rent/contacts/list'
+autocomplete(
+    document.getElementById("contact"),
+    arr=[],
+    url=url_contact_list,
+    3,
+    document.getElementById("contact_id")
+);
 
 const getToken = () => {
     form = document.forms[0];
