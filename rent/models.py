@@ -44,6 +44,7 @@ class Building(models.Model):
         max_length=20,
         verbose_name='Статус'
     )
+
     created_at = models.DateField(
         verbose_name='Создан',
         auto_now_add=True,

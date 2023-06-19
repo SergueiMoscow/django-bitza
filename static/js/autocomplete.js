@@ -87,13 +87,22 @@ function autocomplete(inp, arr=[], url='', min_len=3, inp_id=null) {
       }
   });
 
+  substring_strong = (str, substr) => {
+  const regex = new RegExp(`(${substr})`, 'gi');
+  return str.replace(regex, (match) =>
+    match.toLowerCase() === substr.toLowerCase() ? `<strong>${match}</strong>` : match
+  );
+
+  }
+
   function addElement(val, item, id='0') {
   /* add element for select (added by sss) */
           b = document.createElement("DIV");
           /*make the matching letters bold:*/
 //          b.innerHTML = "<strong>" + item.substr(0, val.length) + "</strong>";
 //          b.innerHTML += item.substr(val.length);
-          b.innerHTML = item.split(val).join(`<strong>${val}</strong>`);
+          //b.innerHTML = item.split(val).join(`<strong>${val}</strong>`);
+          b.innerHTML = substring_strong(item, val);
           /*insert a input field that will hold the current array item's value:*/
           b.innerHTML += "<input type='hidden' value='" + item + "'>";
           b.innerHTML += `<input type='hidden' value='${id}'>`;
@@ -136,6 +145,7 @@ function autocomplete(inp, arr=[], url='', min_len=3, inp_id=null) {
       x[i].parentNode.removeChild(x[i]);
     }
   }
+
 }
 /*execute a function when someone clicks in the document:*/
 document.addEventListener("click", function (e) {
