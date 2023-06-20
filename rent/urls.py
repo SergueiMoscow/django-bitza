@@ -8,4 +8,5 @@ urlpatterns = [
     path('clients', views.clients, name='clients'),
     path('contracts', views.contracts, name='contracts'),
     re_path(r'contacts/list', views.query_contacts, name='query_contacts'),
+    path('payments/new', views.new_payment, name='new_payment'),
 ]

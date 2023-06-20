@@ -9,6 +9,7 @@ function autocomplete(inp, arr=[], url='', min_len=3, inp_id=null) {
   */
   var currentFocus;
   /*execute a function when someone writes in the text field:*/
+  if (inp == null) return;
   inp.addEventListener("input", function(e) {
       var a, b, i, val = this.value;
       /*close any already open lists of autocompleted values*/

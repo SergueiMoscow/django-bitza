@@ -52,7 +52,11 @@ def payments(request):
             print(f'form not valid {form.errors}')
     else:
         form = PaymentModelForm()
-    result = Payment.objects.all()
+    if request.GET.get('contract'):
+        contract = request.GET.get('contract')
+        result = Payment.objects.filter(contract=contract)
+    else:
+        result = Payment.objects.all()
     page = request.GET.get('page', 1)
     paginator = Paginator(result, 30)
     try:
@@ -146,6 +150,21 @@ def query_contacts(request):
     return JsonResponse(result)
 
 
+def new_payment(request):
+    form = PaymentModelForm()
+    menu = get_menu_items('owners')
+    contract = None
+    if request.GET.get('contract'):
+        contract = Contract.objects.get(pk=request.GET.get('contract'))
+    context = {'form': form, 'menu': menu, 'contract': contract}
+
+    return render(
+        request,
+        'rent/new_payment.html',
+        context=context,
+
+    )
+
 # def check_and_create_clients_group(group_name='Клиенты'):
 #     group = None
 #     try:
@@ -164,4 +183,6 @@ def query_contacts(request):
 #     group = Group.objects.get(name='Клиенты')
 #     user.groups.add(group) # Добавляем клиента в группу
 #     user.save()
+
+
 

@@ -1,38 +1,43 @@
-<!-- Затемнение всей страницы при открытии окна -->
+{% extends 'main.html' %}
 {% load static %}
-<div id="myModal" class="modal">
-    <!-- Содержимое модального окна -->
-    <div class="modal-content">
-        <span class="close">&times;</span>
-        <form id="new_payment" method="POST"
-              action="{% url 'payments' %}">
-            {% csrf_token %}
-            {{ form.errors }}
-            {{ form.date.label }}
-            {{ form.date }}
-            {{ form.room.label }}
-            {# autocomplete block #}
-            <div class="autocomplete">
-            {{ form.room }}
-<!--                <div id="myInputautocomplete-list" class="autocomplete-items"></div>-->
-            </div>
-            {# { form.room1 } #}
-            {# { form.room2 } #}
-            <br>
-            {{ form.amount.label }}
-            {{ form.amount }}
-            {{ form.discount.label }}
-            {{ form.discount }}
-            {{ form.total.label }}
-            {{ form.total }}
-            {{ form.bank_account.label }}
-            {{ form.bank_account }}
-            <input type="submit"
-                   class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
-                   value="create"/>
+{% block add_head %}
+    <link href="{% static 'css/autocomplete.css' %}" rel="stylesheet" />
+{% endblock %}
 
-        </form>
-    </div>
+{% block content %}
+<div class="modal-content">
+    <form id="new_payment" method="POST"
+          action="{% url 'payments' %}">
+        {% csrf_token %}
+        {{ form.errors }}
+        {{ form.date.label }}
+        {{ form.date }}
+        {{ form.room.label }}
+        {# autocomplete block #}
+        {% if contract.room %}
+            {{ form.room }}{{ contract.room }}
+        {% else %}
+        <div class="autocomplete">
+            {{ form.room }}
+            <!--                <div id="myInputautocomplete-list" class="autocomplete-items"></div>-->
+        </div>
+        {% endif %}
+        {# { form.room1 } #}
+        {# { form.room2 } #}
+        <br>
+        {{ form.amount.label }}
+        {{ form.amount }}
+        {{ form.discount.label }}
+        {{ form.discount }}
+        {{ form.total.label }}
+        {{ form.total }}
+        {{ form.bank_account.label }}
+        {{ form.bank_account }}
+        <input type="submit"
+               class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ml-3"
+               value="create"/>
+
+    </form>
 </div>
 <script src="{% static 'js/autocomplete.js' %}"></script>
 <script>
@@ -95,6 +100,7 @@ if (document.getElementById('discount')) {
     });
 }
 
+
 </script>
 
-
+{% endblock %}

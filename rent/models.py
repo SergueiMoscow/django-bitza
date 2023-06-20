@@ -688,7 +688,7 @@ class ExpectedPayments(models.Model):
     class Meta:
         managed = False
         db_table = "expected_payments"
-        abstract = True
+        # abstract = True
 
 
 class VacantRooms(models.Model):
@@ -697,4 +697,4 @@ class VacantRooms(models.Model):
     class Meta:
         managed = False
         db_table = 'vacant_rooms'
-        abstract = True
+        # abstract = True
