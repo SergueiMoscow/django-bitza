@@ -1,0 +1,24 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build-job:
+  stage: build
+  script:
+    - echo "Building application..."
+    - docker build -t django-bitza-image .
+    - echo "Building complete"
+
+unit-test-job:
+  stage: test
+  script:
+    - echo "Running unit tests..."
+    - docker run --rm bitza-image pytest -s -v
+    - echo "Unit tests passed"
+
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+    - echo "Deployment not implemented"
