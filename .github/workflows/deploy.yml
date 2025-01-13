@@ -12,5 +12,5 @@
        steps:
          - name: Send deploy request
            run: |
-             curl -X POST ${{ secrets.DEPLOY_URL }} \
+             curl -H ${{ secrets.DEPLOY_URL }} \
              -H "deploy-token: ${{ secrets.DEPLOY_TOKEN }}"
