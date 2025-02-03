@@ -1,15 +1,25 @@
-   name: Deploy
+name: Trigger Jenkins Pipeline
 
-   on:
-     push:
-       branches:
-         - main
+on:
+  push:
+    branches:
+      - main
 
-   jobs:
-     deploy:
-       runs-on: ubuntu-latest
+jobs:
+  trigger-jenkins:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
 
-       steps:
-         - name: Send deploy request
-           run: |
-             curl ${{ secrets.DEPLOY_URL }} -H "deploy-token: ${{ secrets.DEPLOY_TOKEN }}"
+      - name: Получить Crumb
+        id: get-crumb
+        run: |
+          CRUMB=$(${{ secrets.CRUMB_URL }})
+          echo "CRUMB=${CRUMB}" >> $GITHUB_OUTPUT
+
+      - name: Trigger Jenkins Job
+        run: |
+          curl -X POST "${{ secrets.DEPLOY_URL }}" \
+            -H "Jenkins-Crumb: ${{ steps.get-crumb.outputs.CRUMB }}" \
+            --user ${{ secrets.USER_TOKEN }}

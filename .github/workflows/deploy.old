@@ -1,0 +1,15 @@
+   name: Deploy
+
+   on:
+     push:
+       branches:
+         - main
+
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+
+       steps:
+         - name: Send deploy request
+           run: |
+             curl ${{ secrets.DEPLOY_URL }} -H "deploy-token: ${{ secrets.DEPLOY_TOKEN }}"
